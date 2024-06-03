@@ -1,6 +1,9 @@
 # Maze Solver
 
 A C# console application that reads a maze from a file and solves it using a backtracking algorithm.
+I built this project around april-may in 2023, still being my first year into computer science and coding.
+I hope you will appreciate my efforts! Feel free to optimize my code and suggest changes!
+(Of course, if i started building this project more recently i would have used more efficent data structures and maybe recursion as well)
 
 ## Features
 

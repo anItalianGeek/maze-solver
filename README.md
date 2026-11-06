@@ -3,6 +3,8 @@
 > First version, single-threaded, written in 2023 during my first year of programming.
 > A year later I redid the same problem in Java with parallel exploration:
 > [mazeSolver-multiThread](https://github.com/anItalianGeek/mazeSolver-multiThread).
+>
+> Kept as a learning archive, without active development or maintenance.
 
 A C# console application that reads a maze from a file and solves it using a backtracking algorithm.
 I built this project around april-may in 2023, still being my first year into computer science and coding.

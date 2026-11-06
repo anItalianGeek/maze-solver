@@ -11,52 +11,78 @@ I hope you will appreciate my efforts! Feel free to optimize my code and suggest
 
 ## Features
 
-- Reads maze dimensions and structure from a file
-- Explores possible paths to find the exit
-- Visual representation of the maze and the solution path
-- Efficiently handles crossroads and dead ends
+- Reads maze dimensions and structure from an external text file
+- Explores possible directions step-by-step
+- Console visualization showing the maze and real-time movement
+- Manages intersections using an explicit crossroad matrix acting as a stack
 
 ## Backtracking Algorithm
 
-This project uses a backtracking algorithm to solve the maze. The backtracking algorithm explores all possible solutions and backtracks when it reaches a dead end. Here’s how the program implements this logic:
+This project uses an iterative backtracking approach implemented with 2D array stacks rather than recursion:
 
-1. **Exploration of Directions**: For each position in the maze, the program checks possible directions for movement.
-2. **Storing Crossroads**: Crossroads with more than two directions are stored so that the program can backtrack if a dead end is reached.
-3. **Movement and Recording**: The program moves in the chosen direction and records each move.
-4. **Dead End Detection**: When there are no valid moves, the program identifies a dead end.
-5. **Returning to Crossroads**: In case of a dead end, the program backtracks to the last stored crossroad and tries a different direction.
-6. **Continuing Until Success or Exhaustion of Options**: This process continues until the maze exit is found or all possible options are exhausted.
+1. **Direction Checking**: For each position in the maze, `CheckMovements` checks up, down, right, and left boundaries and walls (`'0'`).
+2. **Crossroad Stack**: When three or more directions are available (`movementsAvailable >= 3`), `CheckIfThreeWayChoice` pushes the coordinates, available choices, and history index onto an `indexCrossroads` matrix (acting as a LIFO stack).
+3. **Movement & Trail Recording**: `Move` marks the previous position with `'1'`, advances to the chosen tile, marks it with `'x'`, and appends coordinates to the `history` log.
+4. **Dead End Recovery**: When no open directions remain, the algorithm pops the last recorded crossroad from `indexCrossroads`, rewinds the trail in `history`, and tries the next available alternative.
+5. **Exit Condition**: The search loops until the bottom-right corner of the maze matrix is marked with `'x'`.
 
-This technique allows the program to explore the maze efficiently, finding the path from start to finish without getting stuck in dead ends.
+## Maze File Specification
 
-## Getting Started
+The program expects a file named exactly `maze.txt` formatted as follows:
 
-### Prerequisites
+- **Line 1**: Number of rows (`dimensionRows`, integer).
+- **Line 2**: Number of columns (`dimensionColumns`, integer).
+- **Remaining lines**: The maze grid, where `'0'` represents a wall and `'1'` represents a walkable path.
 
-- .NET 5.0 SDK or later
+A valid sample maze is provided in the repository as [`maze.txt`](maze.txt) (27 rows by 22 columns).
 
-### Installation
+> **Important**: In [`maze-solver.cs`](maze-solver.cs) (lines 399–403), the file is loaded via:
+> ```csharp
+> try {
+>     fileReader = new StreamReader(@"maze.txt");
+> } catch (Exception e) {
+>     return;
+> }
+> ```
+> The program searches for `maze.txt` in the **current working directory** of the process (`Directory.GetCurrentDirectory()`). If `maze.txt` is missing from that directory, the exception is caught silently and the program exits immediately without error output.
+>
+> **Adapting custom mazes without changing source code**: Do not modify the path in `maze-solver.cs`. Instead, ensure your custom maze is saved or copied as `maze.txt` inside the working directory from which you run the executable.
+
+## Building and Running
+
+The repository contains a standalone C# source file ([`maze-solver.cs`](maze-solver.cs)) and does not include a pre-generated `.csproj` or solution file. You can run it with any standard C# toolchain:
+
+### Option A: Using the .NET SDK (`dotnet`)
 
 1. Clone the repository:
-    ```sh
-    git clone https://github.com/anItalianGeek/maze-solver.git
-    ```
-2. Navigate to the project directory:
-    ```sh
-    cd maze-solver
-    ```
+   ```sh
+   git clone https://github.com/anItalianGeek/maze-solver.git
+   cd maze-solver
+   ```
+2. Initialize a temporary console wrapper, copy the files, and run:
+   ```sh
+   dotnet new console -o runner
+   cp maze-solver.cs runner/Program.cs
+   cp maze.txt runner/
+   cd runner
+   dotnet run
+   ```
 
-### Usage
+### Option B: Using the C# Compiler (`csc`)
 
-1. Ensure the maze file is correctly formatted as specified:
-    - First line: number of rows
-    - Second line: number of columns
-    - Following lines: maze layout with '0' for walls and '1' for paths
-2. Update the path to the maze file in the source code if necessary.
-3. Build and run the project:
-    ```sh
-    dotnet run
-    ```
+From a Developer Command Prompt or environment where `csc` is available:
+```sh
+csc maze-solver.cs
+./maze-solver.exe
+```
+*(Make sure `maze.txt` is present in the directory where `maze-solver.exe` is executed).*
+
+### Option C: Using Visual Studio
+
+1. Create a new **C# Console Application**.
+2. Replace `Program.cs` with the contents of [`maze-solver.cs`](maze-solver.cs).
+3. Add [`maze.txt`](maze.txt) to the project and in its File Properties set **Copy to Output Directory** to **Copy if newer** (or **Copy always**).
+4. Run the project (`F5` or `Ctrl+F5`).
 
 ## Contributing
 
